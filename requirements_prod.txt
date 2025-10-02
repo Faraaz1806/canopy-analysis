@@ -11,8 +11,8 @@ Pillow==10.4.0
 matplotlib==3.9.2
 
 # Model / future ML (safe to remove if pure simulation)
-torch==2.4.1
-torchvision==0.19.1
+torch==2.5.1
+torchvision==0.20.1
 
 # External services & utilities
 cloudinary==1.44.0
