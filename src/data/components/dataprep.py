@@ -171,7 +171,18 @@ def compute_data_stat(gf_aois, layers_names, scale=4):
 def separate_geometry(
     multipolygon: shapely.MultiPolygon, distance: float = 1000
 ):
-    polygones = list(multipolygon.geoms)
+    # Handle both Polygon and MultiPolygon cases
+    if isinstance(multipolygon, shapely.Polygon):
+        return [multipolygon]  # Return single polygon as a list
+    elif isinstance(multipolygon, shapely.MultiPolygon):
+        polygones = list(multipolygon.geoms)
+    else:
+        # Handle other geometry types or collections
+        if hasattr(multipolygon, 'geoms'):
+            polygones = list(multipolygon.geoms)
+        else:
+            return [multipolygon]  # Return as single item list
+    
     areas = []
     while len(polygones) > 0:
         poly = polygones.pop()

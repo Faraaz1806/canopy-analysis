@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Canopy Height Analysis — Simple Uploader</title>
+<style>
+  :root{ --green:#28a745; --bg:#000; --card:#fff; --muted:#666; --radius:12px; --gap:20px; }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;}
+  html,body,#app{height:100%;}
+  body{background:var(--bg); color:var(--card); padding:18px;}
+  .container{display:flex; gap:var(--gap); height:100%; align-items:stretch;}
+  .left{width:34%; min-width:340px; display:flex; flex-direction:column; gap:var(--gap); align-items:stretch; max-height:100%; overflow:auto; padding-right:6px;}
+  .left .card{width:100%;}
+  .right{flex:1; min-width:300px; display:flex; align-items:center; justify-content:center;}
+  .card{background:var(--card); color:#000; border-radius:var(--radius); padding:18px; box-shadow:0 8px 30px rgba(0,0,0,0.45);}
+  .upload-card{border:2px dashed #d1d1d1; text-align:center; padding:26px; display:flex; flex-direction:column; gap:12px; align-items:center; justify-content:center;}
+  .upload-title{color:#111; font-weight:700; font-size:18px;}
+  .upload-note{font-size:13px; color:var(--muted);}
+  .choose-btn{background:var(--green); color:#fff; border:none; padding:10px 16px; border-radius:8px; cursor:pointer; font-weight:600; box-shadow:0 6px 14px rgba(40,167,69,0.18);}
+  input[type="file"]{display:none;}
+  .samples{display:flex; flex-direction:column; gap:12px;}
+  .samples-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px;}
+  .thumb{border-radius:8px; overflow:hidden; height:120px; display:block; cursor:pointer; border:1px solid #e6e6e6; box-shadow:0 6px 12px rgba(0,0,0,0.08); background:#0b0b0b; padding:0;}
+  .thumb img{width:100%; height:100%; object-fit:cover; display:block;}
+  .analysis-card{width:100%; height:100%; border-radius:var(--radius); padding:32px; display:flex; flex-direction:column; gap:18px; align-items:center; justify-content:flex-start; box-shadow:0 12px 30px rgba(0,0,0,0.5);}
+  .analysis-inner{max-width:920px; width:100%; background:var(--card); color:#000; border-radius:var(--radius); padding:34px; min-height:360px; display:flex; flex-direction:column; gap:18px; align-items:center; position:relative;}
+  .heading{ text-align:center; }
+  .heading h1{color:#0b7a34;margin-bottom:6px;font-size:22px;}
+  .heading p{margin:0;color:#333;font-size:14px;}
+  .model-info{font-weight:600;color:#333;font-size:13px;}
+  .preview{width:100%; border-radius:10px; border:1px solid #efefef; overflow:hidden; display:flex; background:#f8f8f8; align-items:center; justify-content:center; min-height:260px;}
+  .preview img{max-width:100%; max-height:420px; display:block; object-fit:contain;}
+  .meta{display:flex; width:100%; justify-content:space-between; align-items:center; gap:12px;}
+  .meta .info{font-size:13px;color:#444;}
+  .meta .actions{display:flex; gap:10px; align-items:center;}
+  .small-btn{background:transparent; border:1px solid #ddd; padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:600; transition:.2s background,color,border;}
+  .small-btn.green{background:var(--green); color:#fff; border-color:var(--green);}  
+  .small-btn:hover{background:#f2f2f2;}
+  .small-btn.green:hover{filter:brightness(.9);}  
+  @media (max-width:900px){ .container{flex-direction:column;} .left{width:100%;min-width:unset;max-height:none;} .right{width:100%;} .thumb{height:90px;} }
+  .muted{color:var(--muted); font-size:13px;}
+  /* === Fullscreen styles === */
+  #app.fs-preview {position:fixed; inset:0; background:#000; z-index:9999; padding:0; display:flex;}
+  #app.fs-preview .left {display:none;}
+  #app.fs-preview .right {flex:1; align-items:stretch;}
+  #app.fs-preview .analysis-card {padding:0; border-radius:0; box-shadow:none; background:#000;}
+  #app.fs-preview .analysis-inner {max-width:100%; width:100%; height:100%; padding:8px 12px 12px; border-radius:0; background:#fff;}
+  #app.fs-preview .heading {position:absolute; top:8px; left:50%; transform:translateX(-50%); background:rgba(255,255,255,0.95); padding:6px 18px 10px; border-radius:12px; box-shadow:0 4px 18px rgba(0,0,0,.25); z-index:10;}
+  #app.fs-preview .preview {flex:1; min-height:0; margin-top:60px; background:#fff; border:1px solid #ddd;}
+  #app.fs-preview .preview img {max-height:100%; height:auto;}
+  #app.fs-preview .meta {position:absolute; bottom:14px; right:16px; width:auto; background:rgba(255,255,255,0.92); padding:10px 14px; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,.25);}
+  #app.fs-preview .meta .info {display:none;} /* hide text to save space */
+  #app.fs-preview #fullscreenBtn {background:#222; color:#fff; border-color:#222;}
+  #app.fs-preview #fullscreenBtn:hover {background:#333;}
+  body.fs-lock{overflow:hidden;}
+  /* small floating exit hint */
+  #exitHint {position:fixed; top:8px; right:14px; background:rgba(0,0,0,.55); color:#fff; font-size:12px; padding:4px 10px; border-radius:20px; z-index:10000; font-weight:500; letter-spacing:.5px; display:none;}
+  #app.fs-preview ~ #exitHint {display:block;}
+</style>
+</head>
+<body>
+  <div id="app" class="container" role="main">
+    <aside class="left" aria-label="Left panel: upload and sample images">
+      <section class="card upload-card" id="drop-area" aria-labelledby="upload-heading" tabindex="0">
+        <div class="upload-title" id="upload-heading">Upload Image for Analysis</div>
+        <div class="upload-note">Click or drag & drop an image here<br><span class="muted">Supports PNG, JPG, JPEG, TIFF</span></div>
+
+        <label for="fileElem" class="choose-btn" role="button" aria-label="Choose file">Choose File</label>
+        <input id="fileElem" type="file" accept="image/png,image/jpeg,image/jpg,image/tiff,image/gif,image/bmp,image/webp" />
+
+        <div class="muted" id="drop-hint" style="margin-top:6px;font-size:12px;">Or drop image onto this box</div>
+      </section>
+
+      <section class="card samples" aria-labelledby="samples-heading">
+        <div id="samples-heading" style="font-weight:700; margin-bottom:6px;">Sample Images</div>
+        <div class="samples-grid" id="samplesGrid" role="list"></div>
+      </section>
+    </aside>
+
+    <section class="right" aria-label="Analysis panel">
+      <div class="analysis-card card" role="region" aria-labelledby="analysisTitle">
+        <div class="analysis-inner">
+          <div class="heading" id="analysisTitle">
+            <h1>Canopy Height Analysis</h1>
+            <p>Upload an image or select a sample to begin analysis.</p>
+            <div class="model-info">Model: PVTv2 (Training Accuracy: 40%)</div>
+          </div>
+
+          <div class="preview" id="previewArea" aria-live="polite">
+            <div id="placeholder" style="text-align:center;color:#777;">
+              <svg width="120" height="120" viewBox="0 0 24 24" style="opacity:0.7"><path fill="#999" d="M19 3H5c-1.1 0-2 .9-2 2v14a2 2 0 002 2h14c1.1 0 2-.9 2-2V5a2 2 0 00-2-2zm-9 14l-2.5-3.01L6 17l-4-5 2.5-3L9 15z"/></svg>
+              <div style="font-size:14px;margin-top:8px;color:#666;">No image selected</div>
+            </div>
+          </div>
+
+          <div class="meta" aria-hidden="false">
+            <div class="info" id="fileInfo">No file selected</div>
+            <div class="actions">
+              <button class="small-btn" id="fullscreenBtn" type="button" title="Toggle fullscreen (F)">Fullscreen</button>
+              <button class="small-btn green" id="analyzeBtn" disabled>Analyze</button>
+              <button class="small-btn" id="clearBtn">Clear</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div id="exitHint">ESC to exit fullscreen</div>
+<script>
+  // Simple uploader integrated — minimal logic
+  const dropArea = document.getElementById('drop-area');
+  const fileInput = document.getElementById('fileElem');
+  const previewArea = document.getElementById('previewArea');
+  const fileInfo = document.getElementById('fileInfo');
+  const analyzeBtn = document.getElementById('analyzeBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const samplesGrid = document.getElementById('samplesGrid');
+  const fullscreenBtn = document.getElementById('fullscreenBtn');
+  const appRoot = document.getElementById('app');
+
+  const cloudImages = [
+    { url: 'https://res.cloudinary.com/dcmleubuh/image/upload/v1759394362/canopy_samples/kmkurdicbyapg02tv5pz.png', filename: 'Canopy sample 1' },
+    { url: 'https://res.cloudinary.com/dcmleubuh/image/upload/v1759394367/canopy_samples/ko4gateedlx9fewrtjue.jpg', filename: 'Canopy sample 2' },
+    { url: 'https://res.cloudinary.com/dcmleubuh/image/upload/v1759394368/canopy_samples/v4mu4erf7mzbhrzrmnt7.webp', filename: 'Canopy sample 3' },
+    { url: 'https://res.cloudinary.com/dcmleubuh/image/upload/v1759394369/canopy_samples/cfuuiazvwpnmmgeooe9z.jpg', filename: 'Canopy sample 4' }
+  ];
+
+  let currentFile = null;
+  let currentSample = null;
+  let isUploading = false;
+
+  function setInfo(txt){ if(fileInfo) fileInfo.textContent = txt; console.log('[uploader]', txt); }
+
+  // ===== Fullscreen Toggle =====
+  function toggleFullscreen(){
+    const active = appRoot.classList.toggle('fs-preview');
+    document.body.classList.toggle('fs-lock', active);
+    fullscreenBtn.textContent = active ? 'Exit Fullscreen' : 'Fullscreen';
+    fullscreenBtn.title = active ? 'Exit fullscreen (Esc)' : 'Toggle fullscreen (F)';
+  }
+  fullscreenBtn.addEventListener('click', toggleFullscreen);
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape' && appRoot.classList.contains('fs-preview')) toggleFullscreen();
+    if(e.key.toLowerCase()==='f' && !e.ctrlKey && !e.metaKey && !e.altKey){ // shortcut F
+      toggleFullscreen();
+    }
+  });
+
+  // load sample thumbnails
+  function loadSamples(){
+    samplesGrid.innerHTML = '';
+    cloudImages.forEach(img=>{
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'thumb'; b.setAttribute('aria-label', img.filename);
+      const i = document.createElement('img'); i.src = img.url; i.alt = img.filename; i.loading='lazy';
+      b.appendChild(i);
+      b.addEventListener('click', ()=> {
+        if(isUploading) return;
+        currentFile = null; currentSample = img;
+        showPreview(img.url, img.filename);
+        setInfo(' Sample selected - Click "Analyze" to process');
+      });
+      samplesGrid.appendChild(b);
+    });
+  }
+
+  function showPreview(src, name){
+    previewArea.innerHTML = '';
+    const img = document.createElement('img'); img.src = src; img.alt = name || 'Selected image';
+    img.style.maxWidth = '100%';
+    previewArea.appendChild(img);
+    setInfo(name || 'Image selected');
+    analyzeBtn.disabled = false;
+  }
+
+  // reset input on click so same file can be selected again
+  fileInput.addEventListener('click', ()=> { try{ fileInput.value = ''; }catch(e){} });
+
+  // file selected -> preview only (NO auto analysis)
+  fileInput.addEventListener('change', (e)=>{
+    const f = e.target.files && e.target.files[0];
+    if(!f){ setInfo('No file selected'); return; }
+    currentFile = f; currentSample = null;
+    analyzeBtn.disabled = false;
+    const reader = new FileReader();
+    reader.onload = ev => { showPreview(ev.target.result, f.name); };
+    reader.readAsDataURL(f);
+    setInfo('Image selected - Click "Analyze" to process');
+  });
+
+  // drag & drop
+  ['dragenter','dragover'].forEach(ev => dropArea.addEventListener(ev, e=>{ e.preventDefault(); e.stopPropagation(); dropArea.style.boxShadow='0 0 0 4px rgba(40,167,69,0.08)'; }));
+  ['dragleave','dragend'].forEach(ev => dropArea.addEventListener(ev, e=>{ e.preventDefault(); e.stopPropagation(); dropArea.style.boxShadow=''; }));
+  dropArea.addEventListener('drop', (e)=>{
+    e.preventDefault(); e.stopPropagation(); dropArea.style.boxShadow='';
+    const dt = e.dataTransfer; let files = [];
+    if(dt && dt.items){
+      for(let i=0;i<dt.items.length;i++){ const it = dt.items[i]; if(it.kind==='file'){ const ff = it.getAsFile(); if(ff) files.push(ff); } }
+    }
+    if((!files || files.length===0) && dt && dt.files) files = Array.from(dt.files);
+    if(files.length){ 
+      const f = files[0]; 
+      try{ const dt2 = new DataTransfer(); dt2.items.add(f); fileInput.files = dt2.files; }catch(e){} 
+      currentFile=f; currentSample=null; 
+      analyzeBtn.disabled = false;
+      const r=new FileReader(); 
+      r.onload=ev=>showPreview(ev.target.result,f.name); 
+      r.readAsDataURL(f); 
+      setInfo('Image dropped - Click "Analyze" to process');
+    }
+  });
+
+  clearBtn.addEventListener('click', ()=>{
+    previewArea.innerHTML = '<div id="placeholder" style="text-align:center;color:#777;"><svg width="120" height="120" viewBox="0 0 24 24" style="opacity:0.7"><path fill="#999" d="M19 3H5c-1.1 0-2 .9-2 2v14a2 2 0 002 2h14c1.1 0 2-.9 2-2V5a2 2 0 00-2-2zm-9 14l-2.5-3.01L6 17l-4-5 2.5-3L9 15z"/></svg><div style="font-size:14px;margin-top:8px;color:#666;">No image selected</div></div>';
+    currentFile = null; currentSample = null; isUploading=false; setInfo('No file selected'); analyzeBtn.disabled = true;
+  });
+
+  // simple XHR uploader for local file
+  function uploadLocalFile(file){
+    if(isUploading) { 
+      console.log('Already uploading, please wait...'); 
+      setInfo('Please wait, upload in progress...');
+      return; 
+    }
+    
+    // File validation
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/bmp', 'image/tiff', 'image/webp'];
+    if (!file.type.startsWith('image/') && !allowedTypes.includes(file.type)) {
+      setInfo(' Unsupported file format. Please upload: PNG, JPG, JPEG, GIF, BMP, TIFF, WEBP');
+      return;
+    }
+    
+    // Check file size (16MB limit)
+    if (file.size > 16 * 1024 * 1024) {
+      setInfo('File too large. Maximum size: 16MB');
+      return;
+    }
+    
+    if (file.size === 0) {
+      setInfo(' Empty file detected. Please select a valid image.');
+      return;
+    }
+    
+    isUploading = true; 
+    setInfo(' Uploading: ' + (file.name || 'file'));
+    const fd = new FormData(); 
+    fd.append('file', file);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/upload', true);
+    xhr.withCredentials = false;
+
+    xhr.onload = function(){
+      isUploading = false;
+      console.log('Upload response status:', xhr.status);
+      console.log('Upload response text:', xhr.responseText);
+      
+      if(xhr.status >= 200 && xhr.status < 300){
+        try{ 
+          // Check if we got a response
+          if (!xhr.responseText || xhr.responseText.trim() === '') {
+            setInfo(' Server error: Empty response');
+            return;
+          }
+          
+          const res = JSON.parse(xhr.responseText); 
+          console.log('Upload parsed response:', res);
+          
+          if(res.success){ 
+            if(res.height_map_base64) {
+              // Show analysis results immediately
+              previewArea.innerHTML = `<img src="data:image/png;base64,${res.height_map_base64}" style="width:100%;height:auto;border-radius:8px;">`;
+              setInfo(' Analysis complete!'); 
+            } else {
+              setInfo(' Upload successful!'); 
+            }
+          } else { 
+            setInfo(' Server error: ' + (res.error || 'Unknown error')); 
+          } 
+        }
+        catch(e){ 
+          console.error('JSON parse error:', e);
+          console.error('Response was:', xhr.responseText);
+          setInfo('Upload failed: Invalid server response'); 
+        }
+      } else {
+        setInfo(' Upload failed: HTTP ' + xhr.status);
+        console.error('upload failed', xhr.status, xhr.responseText);
+      }
+    };
+    
+    xhr.onerror = function(){ 
+      isUploading=false; 
+      setInfo(' Network error (check if server is running)'); 
+    };
+    
+    xhr.onabort = function(){
+      isUploading=false;
+      setInfo(' Upload cancelled');
+    };
+    
+    xhr.send(fd);
+  }
+
+  // simple XHR analyzer for cloud sample
+  function startAnalyzeSample(){
+    if(!currentSample) {
+      setInfo('No sample selected');
+      return;
+    }
+    if(isUploading) { 
+      console.log('Busy with another operation...'); 
+      setInfo('Please wait, analysis in progress...');
+      return; 
+    }
+    
+    isUploading = true; 
+    setInfo('Analyzing sample: ' + currentSample.filename);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/analyze_cloud', true);
+    xhr.withCredentials = false;
+    xhr.setRequestHeader('Content-Type','application/json;charset=UTF-8');
+
+    xhr.onload = function(){
+      isUploading=false;
+      console.log('Sample analysis response status:', xhr.status);
+      console.log('Sample analysis response text:', xhr.responseText);
+      
+      if(xhr.status >= 200 && xhr.status < 300){
+        try{ 
+          // Check if we got a response
+          if (!xhr.responseText || xhr.responseText.trim() === '') {
+            setInfo('Analysis error: Empty response');
+            return;
+          }
+          
+          const res = JSON.parse(xhr.responseText); 
+          console.log('Sample analysis parsed response:', res);
+          
+          if(res.success && res.height_map_base64){ 
+            previewArea.innerHTML = `<img src="data:image/png;base64,${res.height_map_base64}" style="width:100%;height:auto;border-radius:8px">`; 
+            setInfo('Analysis complete!'); 
+          } else { 
+            setInfo(' Analysis error: ' + (res.error || 'No visualization available')); 
+          } 
+        }
+        catch(e){ 
+          console.error('Sample analysis JSON parse error:', e);
+          console.error('Response was:', xhr.responseText);
+          setInfo('Analysis failed: Invalid server response'); 
+        }
+      } else {
+        setInfo(' Analysis failed: HTTP ' + xhr.status);
+        console.error('analyze failed', xhr.status, xhr.responseText);
+      }
+    };
+    
+    xhr.onerror = function(){ 
+      isUploading=false; 
+      setInfo(' Network error during analysis'); 
+    };
+    
+    xhr.onabort = function(){
+      isUploading=false;
+      setInfo(' Analysis cancelled');
+    };
+    
+    xhr.send(JSON.stringify({ url: currentSample.url }));
+  }
+
+  // manual analyze button - MAIN CONTROL
+  analyzeBtn.addEventListener('click', ()=>{
+    if(isUploading) {
+      setInfo('Analysis in progress... Please wait');
+      return;
+    }
+    
+    if(currentFile) {
+      setInfo('Starting analysis...');
+      uploadLocalFile(currentFile);
+    } else if(currentSample) {
+      setInfo(' Analyzing sample...');
+      startAnalyzeSample();
+    } else {
+      setInfo(' No image selected. Please upload or select a sample first.');
+    }
+  });
+
+  // init
+  loadSamples();
+  // health check optional
+  fetch('/health').then(r=>r.json()).then(d=>console.log('health',d)).catch(e=>console.warn('health failed',e));
+</script>
+</body>
+</html>

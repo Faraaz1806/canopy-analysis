@@ -33,9 +33,10 @@ class SMP_Unet(nn.Module):
             in_channels=3,
             encoder_weights=encoder_weights,
         )
-        self.seg_model.encoder.load_state_dict(
-            torch.load(pretrained_encoder_path)
-        )
+        if pretrained_encoder and pretrained_encoder_path:
+            self.seg_model.encoder.load_state_dict(
+                torch.load(pretrained_encoder_path, weights_only=False)
+            )
         set_first_layer(self.seg_model.encoder, num_channels)
 
         if chkpt_path:

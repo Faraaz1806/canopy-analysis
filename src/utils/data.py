@@ -10,7 +10,7 @@ import rasterio.features
 from rasterio.windows import Window
 from shapely.affinity import affine_transform
 
-from utils import mkdir
+from src.utils.utils import mkdir
 
 log = logging.getLogger(__name__)
 

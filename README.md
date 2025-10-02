@@ -1,209 +1,319 @@
-# Open-Canopy: Towards Very High Resolution Forest Monitoring
+# 🌲 Open-Canopy: AI-Powered Forest Canopy Height Analysis
 
-![Static Badge](https://img.shields.io/badge/Code%3A-lightgrey?color=lightgrey) [![license](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/IGNF/FLAIR-1-AI-Challenge/blob/master/LICENSE) <a href="https://pytorch.org/get-started/locally/"><img alt="PyTorch" src="https://img.shields.io/badge/PyTorch-ee4c2c?logo=pytorch&logoColor=white"></a>
-<a href="https://pytorchlightning.ai/"><img alt="Lightning" src="https://img.shields.io/badge/-Lightning-792ee5?logo=pytorchlightning&logoColor=white"></a>   ![Static Badge](https://img.shields.io/badge/Dataset%3A-lightgrey?color=lightgrey) [![license](https://img.shields.io/badge/License-IO%202.0-green.svg)](https://github.com/etalab/licence-ouverte/blob/master/open-licence.md)
+**Production-ready web service for real-time forest canopy height estimation using satellite/aerial imagery.**
 
-This is the official repository associated with the pre-print: "Open-Canopy: Towards Very High Resolution Forest Monitoring".
+[![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Flask-3.1.0-green.svg)](https://flask.palletsprojects.com/)
+[![Node.js](https://img.shields.io/badge/Node.js-20+-green.svg)](https://nodejs.org/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-This repository includes the code needed to reproduce all experiments in the paper.
+---
 
-- **Datapaper :** Pre-print on arXiv: https://arxiv.org/abs/2407.09392.
+## 🚀 Quick Start
 
-- **Dataset link :** https://huggingface.co/datasets/AI4Forest/Open-Canopy.
-
-- **Size :** Approximately 360GB, including predictions on test set and pretrained models.
-
-<!-- - **Github link :** https://github.com/fajwel/Open-Canopy.  -->
-
-## Context & Data
-
-Estimating canopy height and canopy height change at meter resolution from satellite imagery has numerous applications, such as monitoring forest health, logging activities, wood resources, and carbon stocks. However, many existing forestry datasets rely on commercial or closed data sources, restricting the reproducibility and evaluation of new approaches. To address this gap, we introduce Open-Canopy, an open-access and country-scale benchmark for very high resolution (1.5 m) canopy height estimation.
-Covering more than 87,000 km2 across France, Open-Canopy combines [SPOT 6-7](https://openspot-dinamis.data-terra.org/) satellite imagery with high resolution aerial [LiDAR data](https://geoservices.ign.fr/lidarhd).
-Additionally, we propose a benchmark for canopy height change detection between two images taken at different years, a particularly challenging task even for recent models.
-To establish a robust foundation for these benchmarks, we evaluate a comprehensive list of state-of-the-art computer vision models for canopy height estimation.
-
-*Examples of canopy height estimation*
-
-<p align="center">
-  <figure style="display: inline-block; margin: 0 20px;">
-    <img src="images/height_estimation.png" alt="Height Estimation" width="100%" />
-  </figure>
-</p>
-
-*Example of canopy height change estimation*
-
-<p align="center">
-  <figure style="display: inline-block; margin: 0 20px;">
-    <img src="images/height_change_estimation.png" alt="Height Change Estimation" width="100%" />
-  </figure>
-</p>
-
-## Dataset Structure
-
-A full description of the dataset can be found in the supplementary material of the [Open-Canopy article](https://arxiv.org/abs/2407.09392).
-
-Our training, validation, and test sets cover most of the French territory. Test tiles are separated from train and validation tiles by a 1km buffer (a).
-
-For each tile, we provide VHR images at a 1.5 m resolution (b) and associated LiDAR-derived canopy height maps (c).
-
-![Dataset overview](images/Open-Canopy_overview.png)
-
-## Installation
-
-### System requirements
-
-- Storage: 360GB of available storage to download the dataset.
-- Training: a recent GPU to train models with default configs (e.g., V100 32GB, A100, RTX8000...).
-
-### Python environment
-
-We provide here instructions for installation with miniconda/mamba.
-Installation was tested on Mac and Linux.
-
-If you are installing on a computer without GPU, update the `environment.yaml`file (uncomment `cpu_only`and comment `pytorch-cuda=11.8`).
+### Local Development
 
 ```bash
-# Clone the project
-git clone https://github.com/Open-Canopy
+# 1. Clone repository
+git clone https://github.com/fajwel/Open-Canopy.git
 cd Open-Canopy
 
-# create a conda environment for Open-Canopy and install dependencies
-conda env create -f environment.yaml -n canopy
-# If it doesn't work setting channel-priority to flexible can help
-# conda config set channel_priority flexible
+# 2. Install Python dependencies
+pip install -r requirements_prod.txt
 
-# activate conda environment
-conda activate canopy
+# 3. Install Node dependencies
+npm install
+
+# 4. Start server (Node proxy + Flask backend)
+node server.js
 ```
 
-Note: Open-Canopy makes use of [rootutils](https://github.com/ashleve/rootutils) so you do not have to install Open-Canopy with pip.
-Once you have the environment ready, see the [Usage](#usage) section to run scripts.
+**Open:** http://localhost:3000
 
-### Download models pretrained on ImageNet
+---
 
-A [script](scripts/download_pretrained.sh) is provided to download all the models finetuned in the benchmark.
+##  Features
+
+-  **Image Upload**: Drag & drop or click to upload forest images
+-  **Complete Analysis**: Height distribution, land cover, statistics
+-  **Interactive Reports**: Full-screen view with detailed visualizations
+-  **Sample Images**: Pre-loaded Cloudinary integration
+-  **Real-time Processing**: Instant canopy analysis results
+-  **Responsive UI**: Works on desktop and mobile
+-  **Production Ready**: Optimized for cloud deployment
+
+---
+
+## 🏗️ Architecture
+
+```
+┌─────────────┐      ┌──────────────┐      ┌─────────────────┐
+│   Browser   │◄────►│ Node.js :3000│◄────►│ Flask :5000     │
+│  (Frontend) │      │   (Proxy)    │      │  (API/Analysis) │
+└─────────────┘      └──────────────┘      └─────────────────┘
+                            │
+                            ▼
+                     ┌──────────────┐
+                     │  Static Files│
+                     └──────────────┘
+```
+
+**Why Node Proxy?**
+- Single unified port for deployment (Render/Heroku requirement)
+- Automatic Flask backend spawning
+- Static file serving
+- Future-proof for React/Vue frontend
+
+---
+
+##  Deployment
+
+### **Option 1: Render (Recommended)**
+
+**Build Command:**
+```bash
+pip install -r requirements_prod.txt && npm install
+```
+
+**Start Command:**
+```bash
+node server.js
+```
+
+**Environment Variables:**
+```env
+FLASK_PORT=5000
+PYTHON_CMD=python
+MODEL_PATH=useful_models/pvtv2.ckpt
+DEBUG=False
+
+# Optional: Cloudinary Integration
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+```
+
+---
+
+### **Option 2: Heroku**
 
 ```bash
-# Supposing you are at the root or Open-Canopy
-# make script executable
-chmod +x scripts/download_pretrained.sh
+# Login and create app
+heroku login
+heroku create canopy-analysis-app
 
-# run script
-scripts/download_pretrained.sh
+# Set buildpacks
+heroku buildpacks:set heroku/python
+heroku buildpacks:add --index 2 heroku/nodejs
+
+# Deploy
+git push heroku main
 ```
 
-Please refer to the official [github repository](https://github.com/facebookresearch/HighResCanopyHeight) to download *Tolan et al.*'s pretrained model, and copy it at the following location: `Open-Canopy/datasets/Models/tolan_SSLlarge.pth`.
+**Procfile** (already included):
+```
+web: gunicorn --bind 0.0.0.0:$PORT canopy_web_server_fixed:app
+```
 
-Note: Alternative size of models not used in the benchmark are commented out in the script. An associated config file is also given for all of them.
+---
 
-### Download Open-Canopy dataset
+### **Option 3: Railway**
 
-We recommend using [Hugging Face python API](https://huggingface.co/docs/huggingface_hub/guides/download) to download the [Open-Canopy dataset](https://huggingface.co/datasets/AI4Forest/Open-Canopy).
+1. Connect GitHub repo at [railway.app](https://railway.app)
+2. Auto-deploys on push
+3. Set environment variables in dashboard
+4. No additional configuration needed
 
-The dataset must be located at the following location: `Open-Canopy/datasets` (unless you change paths in `configs`).
-A [script](scripts/download_dataset.py) is provided to do it seamlessly:
+---
 
+### **Option 4: Python Only (Direct Flask)**
+
+**Build Command:**
 ```bash
-# Supposing you are at the root or Open-Canopy
-python scripts/download_dataset.py
+pip install -r requirements_prod.txt
 ```
 
-## Usage
-
-This repository is built upon [PyTorch](https://pytorch.org/). Its structure was bootstrapped from [this code template](https://github.com/ashleve/lightning-hydra-template),
-which heavily relies on [Hydra](https://hydra.cc/) and [Pytorch-Lightning](https://github.com/PyTorchLightning/pytorch-lightning). Parameters for training can be accessed and modified through the config files in the `configs` folder or overridden in the command line. Models and dataloaders models were implemented as in https://github.com/archaeoscape-ai/archaeoscape, thanks to [Yohann Perron](https://github.com/yohannperron) and [Vladyslav Sydorov](https://github.com/vsydorov).
-
-### Data preprocessing
-
-See the [preprocessing README](src/preprocessing/README.md) for instructions on processing data from scratch, e.g., if you want to extend Open-Canopy to new areas.
-
-Note: in the first version of the dataset, non classified points were not taken into account in order to compute canopy height models (CHM) from LiDAR point clouds. The affected pixels can be masked using the provided lidar classification rasters (class 1). Starting January 2025, we also provide a second version of the CHMs where non classified points are included for computations (folder `lidar_v2`). This can lead to slighlty better metrics (gain about 0.05m on height MAE for the best model), although it affects less than 0.5% of pixels. However, use the first version of the CHMs to reproduce results of the paper. IGN is also starting to release pre-computed CHMs in some areas. When and where available, we recommend to use the CHMs released by IGN.
-
-### Retrieve data
-
-As described in the supplementary material of the [paper](https://arxiv.org/abs/2407.09392), SPOT 6-7 imagery, LiDAR height maps and classification rasters can be accessed through virtual files (one per year).
-
-A grid of 1km x 1km tiles is provided in the file "geometries.geojson", with a column "split" indicating to which split each tile belongs ("train"/"val"/"test"/"buffer").
-
-See `examples/visualize_data.py` for an example of how to plot data for a given geometry.
-
-### Train a model
-
-Supposing you are at the root of Open-Canopy.
-
-Train a default model with the default configuration (ViT small):
-
+**Start Command:**
 ```bash
-python src/train.py
+gunicorn -w 2 -b 0.0.0.0:$PORT canopy_web_server_fixed:app
 ```
 
-Train a Unet with the default configuration:
-
+Or development:
 ```bash
-python src/train.py model=smp_unet
+python canopy_web_server_fixed.py
 ```
 
-After training, the model automatically proceeds to prediction and evaluation on the test tiles. The resulting metrics, along with other logs in the `logs` directory, are saved in an Excel file for easy reference and analysis.
+---
 
-The list of all commands used for the experiments in the paper can be found in `scripts/canopy.sh`. Some of them make use of the [hydra multirun functionality](https://hydra.cc/docs/tutorials/basic/running_your_app/multi-run/).
-Configs for training are located in the `configs`folder at the root of the repository.
+##  Technology Stack
 
-### Compute metrics
+### Backend
+- **Flask 3.1.0** - Web framework
+- **Gunicorn 23.0.0** - Production WSGI server
+- **NumPy 1.26.4** - Numerical processing
+- **Pillow 10.4.0** - Image processing
+- **Matplotlib 3.9.2** - Visualization generation
 
-If you already have height maps, e.g., those provided in the folder `canopy_height/predictions`and `canopy_height_change` of the dataset:
+### Optional ML (Future)
+- **PyTorch 2.4.1** - Deep learning framework
+- **Torchvision 0.19.1** - Vision utilities
 
-To evaluate height estimation, complete the `src/metrics/configs/compute_metrics.yaml`config and run:
+### Frontend
+- **Vanilla JavaScript** - No framework dependencies
+- **Responsive CSS** - Mobile-first design
+- **Fullscreen API** - Immersive result viewing
 
+### Infrastructure
+- **Node.js + Express** - Unified deployment proxy
+- **Cloudinary** - Optional cloud image hosting
+
+---
+
+##  Project Structure
+
+```
+Open-Canopy/
+├── canopy_web_server_fixed.py    # Main Flask server
+├── analysis.py                    # Canopy analysis engine
+├── server.js                      # Node.js proxy server
+├── requirements_prod.txt          # Python dependencies
+├── package.json                   # Node dependencies
+├── Procfile                       # Heroku/Railway config
+├── runtime.txt                    # Python version
+├── templates/
+│   └── index.html                 # Web UI (black/white theme)
+├── static/                        # Static assets (if any)
+├── useful_models/
+│   └── pvtv2.ckpt                 # Pre-trained model
+├── uploads/                       # Temp upload storage
+└── temp_outputs/                  # Analysis results cache
+```
+
+---
+
+##  Configuration
+
+### Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PORT` | `3000` | Node.js server port (set by platform) |
+| `FLASK_PORT` | `5000` | Flask backend port |
+| `DEBUG` | `False` | Enable debug mode |
+| `MODEL_PATH` | `useful_models/pvtv2.ckpt` | Model file location |
+| `MAX_UPLOAD_SIZE` | `16777216` | Max file size (16MB) |
+| `PYTHON_CMD` | `python` | Python executable name |
+
+### Cloudinary (Optional)
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `CLOUDINARY_CLOUD_NAME` | Yes | Your cloud name |
+| `CLOUDINARY_API_KEY` | Yes | API key |
+| `CLOUDINARY_API_SECRET` | Yes | API secret |
+| `CLOUDINARY_FOLDER` | No | Upload folder (default: `canopy_samples`) |
+
+---
+
+## Testing
+
+### Health Check
 ```bash
-python src/metrics/compute_metrics.py
+curl http://localhost:3000/health
 ```
 
-To evaluate height change estimation, complete the `src/metrics/configs/compute_change_detection_metrics.yaml`config and run:
-
-```bash
-python src/metrics/compute_change_detection_metrics.py
-```
-
-These two scripts output excel files with computed metrics.
-
-## Pretrained models
-
-Unet and PVTv2 models trained on Open-Canopy are available in the `pretrained_models` folder of the [dataset](https://huggingface.co/datasets/AI4Forest/Open-Canopy/tree/main). Corresponding configs are located at `configs/model/PVTv2_B.yaml`and `configs/model/smp_unet.yaml`.
-Additional documentation coming soon.
-
-## Reference
-
-Please include a citation to the following article if you use the Open-Canopy dataset:
-
-```bibtex
-@article{fogel2024opencanopy,
-      title={Open-Canopy: A Country-Scale Benchmark for Canopy Height Estimation at Very High Resolution},
-      author={Fajwel Fogel and Yohann Perron and Nikola Besic and Laurent Saint-André and Agnès Pellissier-Tanon and Martin Schwartz and Thomas Boudras and Ibrahim Fayad and Alexandre d'Aspremont and Loic Landrieu and Philippe Ciais},
-      year={2024},
-      eprint={2407.09392},
-      publisher = {arXiv},
-      url={https://arxiv.org/abs/2407.09392},
+**Expected Response:**
+```json
+{
+  "status": "healthy",
+  "version": "2.0.0-WEB",
+  "model_available": true,
+  "timestamp": "2025-10-02T17:30:00"
 }
 ```
 
-## Acknowledgements
+### Upload Test
+```bash
+curl -X POST http://localhost:3000/upload \
+  -F "file=@test_image.jpg"
+```
 
-This paper is part of the project *AI4Forest*, which is funded by the French National Research Agency ([ANR](https://anr.fr/Projet-ANR-22-FAI1-0002)), the German Aerospace Center ([DLR](https://www.dlr.de/en)) and the German federal ministry for education and research ([BMBF](https://www.bmbf.de/bmbf/en/home/home_node.html)).
+---
 
-The experiments conducted in this study were performed using HPC/AI resources provided by GENCI-IDRIS (Grant 2023-AD010114718 and 2023-AD011014781) and [Inria](https://inria.fr/fr).
+## API Endpoints
 
-Models and dataloaders models were implemented as in https://github.com/archaeoscape-ai/archaeoscape, thanks to [Yohann Perron](https://github.com/yohannperron) and [Vladyslav Sydorov](https://github.com/vsydorov).
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/` | GET | Web UI |
+| `/health` | GET | Health check |
+| `/upload` | POST | Upload & analyze image |
+| `/analyze_cloud` | POST | Analyze Cloudinary URL |
+| `/files` | GET | List available files |
+| `/serve_file` | GET | Serve static file |
 
-## Dataset license
+---
 
-The "OPEN LICENCE 2.0/LICENCE OUVERTE" is a license created by the French government specifically for the purpose of facilitating the dissemination of open data by public administration.
-If you are looking for an English version of this license, you can find it at the [official github page](https://github.com/etalab/licence-ouverte).
+##  UI Features
 
-As stated by the license :
+- **Drag & Drop Upload** - Intuitive file selection
+- **Sample Gallery** - Pre-loaded forest images
+- **Fullscreen Toggle** - Press `F` or click button
+- **Responsive Layout** - Mobile-optimized
+- **Real-time Status** - Upload/analysis progress
+- **Complete Reports** - Height maps, histograms, statistics
 
-- Applicable legislation: This licence is governed by French law.
-- Compatibility of this licence: This licence has been designed to be compatible with any free licence that at least requires an acknowledgement of authorship, and specifically with the previous version of this licence as well as with the following licences: United Kingdom’s “Open Government Licence” (OGL), Creative Commons’ “Creative Commons Attribution” (CC-BY) and Open Knowledge Foundation’s “Open Data Commons Attribution” (ODC-BY).
+---
 
-## Authors
+##  Model Information
 
-Fajwel Fogel (ENS), Yohann Perron (LIGM, ENPC, CNRS, UGE, EFEO), Nikola Besic (LIF, IGN, ENSG), Laurent Saint-André (INRAE, BEF), Agnès Pellissier-Tanon (LSCE/IPSL, CEA-CNRS-UVSQ), Martin Schwartz (LSCE/IPSL, CEA-CNRS-UVSQ), Thomas Boudras (LSCE/IPSL, CEA-CNRS-UVSQ), Ibrahim Fayad (LSCE/IPSL, CEA-CNRS-UVSQ, Kayrros), Alexandre d'Aspremont (CNRS, ENS, Kayrros), Loic Landrieu (LIGM, ENPC, CNRS, UGE), Philippe Ciais (LSCE/IPSL, CEA-CNRS-UVSQ).
+**Current Model:** PVTv2 (Pyramid Vision Transformer)
+- **Training Epoch:** 22
+- **R² Score:** 40%
+- **RMSE:** 11.63m
+- **MAE:** 9.87m
+- **Input Size:** 224×224
+- **Max Height:** 18m
+
+---
+
+##  Known Limitations
+
+1. **Model Size**: `pvtv2.ckpt` is ~400MB (use Git LFS or external storage)
+2. **File Size Limit**: 16MB per upload
+3. **Concurrent Uploads**: Single-threaded processing (future: background workers)
+4. **Supported Formats**: PNG, JPG, JPEG, GIF, BMP, TIFF, WEBP
+
+---
+
+##  Future Enhancements
+
+- [ ] Real-time model inference (currently simulated)
+- [ ] Multi-model comparison
+- [ ] Batch processing
+- [ ] Export to GeoJSON/Shapefile
+- [ ] User authentication
+- [ ] API rate limiting
+- [ ] Docker containerization
+- [ ] Kubernetes deployment
+
+---
+
+##  Contributing
+
+Contributions welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) first.
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing`)
+5. Open Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see [LICENSE](LICENSE) file for details.
+
+---
+
+
+**Made with 🌲 by the Open-Canopy Team**

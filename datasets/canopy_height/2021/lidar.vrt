@@ -1,0 +1,147 @@
+<VRTDataset rasterXSize="615867" rasterYSize="565597">
+  <SRS dataAxisToSRSAxisMapping="1,2">PROJCS["RGF93 v1 / Lambert-93",GEOGCS["RGF93 v1",DATUM["Reseau_Geodesique_Francais_1993_v1",SPHEROID["GRS 1980",6378137,298.257222101,AUTHORITY["EPSG","7019"]],AUTHORITY["EPSG","6171"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4171"]],PROJECTION["Lambert_Conformal_Conic_2SP"],PARAMETER["latitude_of_origin",46.5],PARAMETER["central_meridian",3],PARAMETER["standard_parallel_1",49],PARAMETER["standard_parallel_2",44],PARAMETER["false_easting",700000],PARAMETER["false_northing",6600000],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","2154"]]</SRS>
+  <GeoTransform>  3.1920000000000000e+05,  1.5000000000000000e+00,  0.0000000000000000e+00,  6.9402010000000000e+06,  0.0000000000000000e+00, -1.5000000000000000e+00</GeoTransform>
+  <VRTRasterBand dataType="UInt16" band="1">
+    <ColorInterp>Gray</ColorInterp>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">lidar/compressed_lidar_20210406371164.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="39996" RasterYSize="43200" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="39996" ySize="43200" />
+      <DstRect xOff="319600" yOff="320800" xSize="39996" ySize="43200" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">lidar/compressed_lidar_20210405374881.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="39996" RasterYSize="42000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="39996" ySize="42000" />
+      <DstRect xOff="110000" yOff="355200" xSize="39996" ySize="42000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">lidar/compressed_lidar_20210405374810.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="39999" RasterYSize="43197" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="39999" ySize="43197" />
+      <DstRect xOff="110800" yOff="319600" xSize="39999" ySize="43197" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">lidar/compressed_lidar_20210405374464.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40396" RasterYSize="41597" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40396" ySize="41597" />
+      <DstRect xOff="76000" yOff="318800" xSize="40396" ySize="41597" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">lidar/compressed_lidar_20210827371098.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="39196" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="39196" ySize="40000" />
+      <DstRect xOff="250400" yOff="358400" xSize="39196" ySize="40000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">lidar/compressed_lidar_20210923367028.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40396" RasterYSize="43197" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40396" ySize="43197" />
+      <DstRect xOff="414800" yOff="281200" xSize="40396" ySize="43197" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">lidar/compressed_lidar_20210525355745.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="38267" RasterYSize="42797" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="38267" ySize="42797" />
+      <DstRect xOff="577600" yOff="522800" xSize="38267" ySize="42797" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">lidar/compressed_lidar_20210809364756.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40396" RasterYSize="41197" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40396" ySize="41197" />
+      <DstRect xOff="388800" yOff="319600" xSize="40396" ySize="41197" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">lidar/compressed_lidar_20210701363672.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40396" RasterYSize="41997" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40396" ySize="41997" />
+      <DstRect xOff="425200" yOff="352800" xSize="40396" ySize="41997" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">lidar/compressed_lidar_20210711377399.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40796" RasterYSize="41197" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40796" ySize="41197" />
+      <DstRect xOff="74400" yOff="355600" xSize="40796" ySize="41197" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">lidar/compressed_lidar_20210424375874.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="39196" RasterYSize="41197" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="39196" ySize="41197" />
+      <DstRect xOff="228400" yOff="0" xSize="39196" ySize="41197" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">lidar/compressed_lidar_20210829362106.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40796" RasterYSize="41197" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40796" ySize="41197" />
+      <DstRect xOff="423200" yOff="317600" xSize="40796" ySize="41197" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">lidar/compressed_lidar_20210810359773.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40799" RasterYSize="42797" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40799" ySize="42797" />
+      <DstRect xOff="460000" yOff="351200" xSize="40799" ySize="42797" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">lidar/compressed_lidar_20210705376404.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40396" RasterYSize="43597" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40396" ySize="43597" />
+      <DstRect xOff="70400" yOff="461600" xSize="40396" ySize="43597" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">lidar/compressed_lidar_20210413369082.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="39596" RasterYSize="36797" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="39596" ySize="36797" />
+      <DstRect xOff="322000" yOff="428400" xSize="39596" ySize="36797" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">lidar/compressed_lidar_20210814371879.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="38796" RasterYSize="40797" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="38796" ySize="40797" />
+      <DstRect xOff="215200" yOff="466000" xSize="38796" ySize="40797" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">lidar/compressed_lidar_20210424376120.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="39196" RasterYSize="40797" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="39196" ySize="40797" />
+      <DstRect xOff="193600" yOff="0" xSize="39196" ySize="40797" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">lidar/compressed_lidar_20211018371095.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="39999" RasterYSize="41600" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="39999" ySize="41600" />
+      <DstRect xOff="375200" yOff="212400" xSize="39999" ySize="41600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">lidar/compressed_lidar_20210625362642.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40399" RasterYSize="42000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40399" ySize="42000" />
+      <DstRect xOff="428400" yOff="424800" xSize="40399" ySize="42000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">lidar/compressed_lidar_20210912387511.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="41196" RasterYSize="43200" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="41196" ySize="43200" />
+      <DstRect xOff="0" yOff="422000" xSize="41196" ySize="43200" />
+    </SimpleSource>
+  </VRTRasterBand>
+</VRTDataset>

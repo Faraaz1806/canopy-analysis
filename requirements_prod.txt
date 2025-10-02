@@ -1,0 +1,28 @@
+# Minimal Production Requirements (Open Canopy)
+# Keep this lean for faster cloud builds. Full dev deps in requirements.txt
+
+# Web framework
+Flask==3.1.0
+gunicorn==23.0.0
+
+# Core scientific stack
+numpy==1.26.4
+Pillow==10.4.0
+matplotlib==3.9.2
+
+# Model / future ML (safe to remove if pure simulation)
+torch==2.4.1
+torchvision==0.19.1
+
+# External services & utilities
+cloudinary==1.44.0
+requests==2.32.3
+
+# Optional (uncomment if needed)
+# python-dotenv==1.0.1
+# tqdm==4.67.1
+# segmentation-models-pytorch==0.3.3
+
+# Notes:
+# - Remove torch & torchvision if you want ultra-minimal runtime.
+# - If adding real model weights, ensure MODEL_PATH env var is set.

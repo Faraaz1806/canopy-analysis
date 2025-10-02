@@ -7,6 +7,16 @@ import torch
 from lightning import LightningModule
 from torchmetrics import MeanMetric
 
+# DirectML support for AMD GPU - DISABLED due to compatibility issues
+try:
+    import torch_directml
+    # Force disable DirectML for now
+    DIRECTML_AVAILABLE = False
+    DIRECTML_DEVICE = None    
+except ImportError:
+    DIRECTML_AVAILABLE = False
+    DIRECTML_DEVICE = None
+
 from src.metrics.compute_metrics import compute_metrics
 from src.models.components.utils import Masked_MAE, Masked_nMAE, Masked_RMSE
 from src.utils import mkdir, pylogger
@@ -115,11 +125,18 @@ class RegressionModule(LightningModule):
         """
         super().__init__()
 
+        # DirectML GPU acceleration setup - DISABLED
+        self.use_directml = False
+        self.directml_device = None
+        log.info("DirectML disabled - using CPU/CUDA")
+
         # this line allows to access init params with 'self.hparams' attribute
         # also ensures init params will be stored in ckpt
         self.save_hyperparameters(logger=False, ignore=["net"])
 
         self.net = net
+
+        # DirectML disabled for compatibility
 
         self.save_freq = save_freq
         self.save_eval_only = save_eval_only
@@ -162,7 +179,7 @@ class RegressionModule(LightningModule):
             self.output_dir = (
                 hydra.core.hydra_config.HydraConfig.get().runtime.output_dir
             )
-        except AttributeError:
+        except (AttributeError, ValueError):
             self.output_dir = "./logs"
         mkdir(self.output_dir + "/preds")
 
@@ -214,6 +231,10 @@ class RegressionModule(LightningModule):
 
         self.net.train()
 
+    def to_directml_device(self, x):
+        """DirectML disabled - return tensor as-is."""
+        return x
+
     def model_step(self, batch, overlap=-1.0):
         """Perform a single model step on a batch of data.
 
@@ -225,17 +246,26 @@ class RegressionModule(LightningModule):
             - A tensor of target labels.
         """
         data, targets, metas = batch
-        output = self.forward(data, metas=metas)
 
-        # target is in dm
+        # DirectML disabled - no device transfer needed
+        output = self.forward(data, metas=metas)        # target is in dm
         targets = targets / 10.0
 
-        if self.hparams.activation == "none":
-            output = output["out"]
-        elif self.hparams.activation == "relu":
-            output = torch.relu(output["out"])
-        elif self.hparams.activation == "softplus":
-            output = torch.nn.functional.softplus(output["out"])
+        # Handle both dictionary and direct tensor outputs
+        if isinstance(output, dict):
+            if self.hparams.activation == "none":
+                output = output["out"]
+            elif self.hparams.activation == "relu":
+                output = torch.relu(output["out"])
+            elif self.hparams.activation == "softplus":
+                output = torch.nn.functional.softplus(output["out"])
+        else:
+            # ConvNeXt-V2 returns direct tensor - apply activation if needed
+            if self.hparams.activation == "relu":
+                output = torch.relu(output)
+            elif self.hparams.activation == "softplus":
+                output = torch.nn.functional.softplus(output)
+            # "none" activation - keep as-is since ConvNeXt-V2 has built-in ReLU for heights
         output_full = output
         if overlap > 0.0:
             # only keep the center of the image

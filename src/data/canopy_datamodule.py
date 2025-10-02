@@ -140,7 +140,7 @@ class GEODataModule(LightningDataModule):
         self.batch_size_per_device = batch_size
         self.epoch = 0
 
-        self.rgen = np.random.default_rng(np.random.randint(0, 2**32 - 1))
+        self.rgen = np.random.default_rng(np.random.randint(0, 2**31 - 1))
         log.info(f"Using {self.rgen=} for training dataset")
 
         try:
