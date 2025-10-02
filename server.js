@@ -76,6 +76,7 @@ app.use(express.static(path.join(__dirname, 'static')));
 
 // Proxy API requests to Flask backend
 app.use('/upload', createProxyMiddleware({ target: `http://localhost:${FLASK_PORT}`, changeOrigin: true }));
+app.use('/analyze_cloud', createProxyMiddleware({ target: `http://localhost:${FLASK_PORT}`, changeOrigin: true }));
 app.use('/analyze_existing', createProxyMiddleware({ target: `http://localhost:${FLASK_PORT}`, changeOrigin: true }));
 app.use('/files', createProxyMiddleware({ target: `http://localhost:${FLASK_PORT}`, changeOrigin: true }));
 app.use('/serve_file', createProxyMiddleware({ target: `http://localhost:${FLASK_PORT}`, changeOrigin: true }));
