@@ -12,7 +12,7 @@ matplotlib==3.9.2
 
 # Model / future ML (safe to remove if pure simulation)
 torch==2.5.1
-torchvision==0.20.1
+torchvision==0.23.0
 
 # External services & utilities
 cloudinary==1.44.0
